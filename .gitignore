@@ -1,0 +1,5 @@
+datas/
+results/
+sources/__pycache__/
+sources/config.py
+sources/reg_list_dates.py
