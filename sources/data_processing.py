@@ -7,6 +7,7 @@ import sys #Exit
 from datetime import datetime
 import re #Regex
 from sources.print import ft_print_err, ft_print_err_no_quitt
+from sources.convert_text_to_date import ft_convert_text_to_date
 # ==============================================================================
 def ft_del_duplicates(array, duplicates, dictNames) :
 
@@ -35,12 +36,31 @@ def ft_del_duplicates(array, duplicates, dictNames) :
                 i -= 1
             i += 1
 # ==============================================================================
-def ft_add_column_from_idx_one(array) :
+def ft_add_column_from_idx_one(array, name, dictNamesOpt) :
+
+    txt = ""
+
+    if (len(dictNamesOpt) > 0)  :
+        if (name == dictNamesOpt["itemZipCode_Name"]) :
+            ft_print_err_no_quitt("PAS D’ITEM CODE POSTAL DANS LA BASE DE DONNÉES")
+            txt = "00000"
+
+        elif (name == dictNamesOpt["itemCity_Name"]) :
+            ft_print_err_no_quitt("PAS D’ITEM VILLE DANS LA BASE DE DONNÉES")
+            txt = "Inconnu"
+
+        elif (name == dictNamesOpt["itemName_Name"]) :
+            ft_print_err_no_quitt("PAS D’ITEM NOM DANS LA BASE DE DONNÉES")
+            txt = "Inconnu"
+
+        elif (name == dictNamesOpt["itemFirstName_Name"]) :
+            ft_print_err_no_quitt("PAS D’ITEM PRÉNOM DANS LA BASE DE DONNÉES")
+            txt = "Inconnu"
 
     for i in range(1, len(array)) :
-        array[i].append("")
+        array[i].append(txt)
 # ==============================================================================
-def ft_save_index_from_name(array, name) :
+def ft_save_index_from_name(array, name, dictNamesOpt = []) :
 
     #VAR
     idx = -1
@@ -51,7 +71,7 @@ def ft_save_index_from_name(array, name) :
 
     if (idx == -1) :
         array[0].append(name)
-        ft_add_column_from_idx_one(array)
+        ft_add_column_from_idx_one(array, name, dictNamesOpt)
         idx = len(array[0]) - 1
 
     return (idx)
@@ -89,10 +109,16 @@ def ft_cleaning_order_items(array, toDel, dictNames, order) :
     indexes = []
     countDel = 0
     tmp = []
+    ret = 0
 
     #Creating columns
     ft_save_index_from_name(array, dictNames["itemRegion_Name"])
     ft_save_index_from_name(array, dictNames["itemDpt_Name"])
+
+    ft_save_index_from_name(array, dictNames["itemZipCode_Name"], dictNames)
+    ft_save_index_from_name(array, dictNames["itemCity_Name"], dictNames)
+    ft_save_index_from_name(array, dictNames["itemName_Name"], dictNames)
+    ft_save_index_from_name(array, dictNames["itemFirstName_Name"], dictNames)
 
     for i in range(len(array[0])) :
         for j in range(len(toDel)) :
@@ -130,7 +156,8 @@ def ft_correct_city_code(db, correct_city, only_code, only_Adh_Id, order, dictNa
 
     #VAR
     error = False
-    i = 2
+    i = 1
+    j = 2
 
     print("\n--CORRECTION DES CODES POSTAUX ET DES VILLES--")
 
@@ -150,15 +177,17 @@ def ft_correct_city_code(db, correct_city, only_code, only_Adh_Id, order, dictNa
                     db[i][idxCity] = code[2]
 
             for ID in only_Adh_Id :
-                for i in range(2, len(ID)) :
+                for j in range(2, len(ID)) :
                     if (ID[0] == db[i][idxAdhID]
-                        and ft_convert_text_to_date(ID[i][0]) <= ft_convert_text_to_date(date) 
-                        and ft_convert_text_to_date(date) < ft_convert_text_to_date(ID[i][1])
+                        and ft_convert_text_to_date(ID[j][0]) <= ft_convert_text_to_date(date) 
+                        and ft_convert_text_to_date(date) < ft_convert_text_to_date(ID[j][1])
                         ) :
                         if (db[i][idxCity].strip("-") != "") :
-                            ft_print_err_no_quitt("L'ADHERENT ID : " + db[i][idxAdhID] + " A RAJOUTÉ UNE VILLE : \"" + db[i][idxCity].strip("-") +"\"")
+                            ft_print_err_no_quitt("L'ADHERENT ID : " + db[i][idxAdhID] + " A RAJOUTÉ UNE VILLE : \""
+                                + db[i][idxCity].strip("-") +"\"")
                         if (db[i][idxZipCode].strip("-") != "") :
-                            ft_print_err_no_quitt("L'ADHERENT ID : " + db[i][idxAdhID] + " A RAJOUTÉ UN CODE POSTAL : \"" + db[i][idxZipCode].strip("-") +"\"")
+                            ft_print_err_no_quitt("L'ADHERENT ID : " + db[i][idxAdhID] + " A RAJOUTÉ UN CODE POSTAL : \""
+                                + db[i][idxZipCode].strip("-") +"\"")
                         db[i][idxZipCode] = ID[1]
 
             if (re.search("^[0-9]{5}$", db[i][idxZipCode]) == None and re.search("^[A-Z]{2}-", db[i][idxZipCode]) == None) :
@@ -322,7 +351,8 @@ def ft_check_double(array, dictNames, order, name, arg2 = "") :
             for j in range(i + 1, len(array)):
 
                 if (arg2 != "" and test.strip().lower() ==  array[j][idx].strip().lower()
-                    and test2.strip().lower() == array[j][idx2].strip().lower()) :
+                    and test2.strip().lower() == array[j][idx2].strip().lower()
+                    and test != "Inconnu" and array[j][idx] != "Inconnu" and test2 != "Inconnu" and array[j][idx2] != "Inconnu") :
                     ft_print_err_no_quitt("ERREUR, MÊME NOM PRÉNOM, ADH ID : " + array[i][idxAdhID] + " ET ID : " + array[j][idxAdhID]
                         + " <" + test + " ; " + test2 + ">")
                     error = True
@@ -337,7 +367,8 @@ def ft_check_double(array, dictNames, order, name, arg2 = "") :
                         + " ET ID : " + array[j][idxAdhID] + " <" + test + ">")
                     error = True
 
-                elif (arg2 == "" and test.strip("'").lstrip(" ,0").strip().lower() == array[j][idx].strip("'").lstrip(" ,0").strip().lower()) :
+                elif (arg2 == "" and test.strip("'").lstrip(" ,0").strip().lower()
+                    == array[j][idx].strip("'").lstrip(" ,0").strip().lower()) :
                     ft_print_err_no_quitt("ERREUR, MÊME " + name + " ADH ID : " + array[i][idxAdhID]
                         + " ET ID : " + array[j][idxAdhID] + " <" + test + ">")
                     error = True

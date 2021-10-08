@@ -45,7 +45,7 @@ from sources.logs import ft_logs
 from sources.save_all import ft_save_all
 from sources.print import ft_print_err, ft_print_err_no_quitt
 from sources.reg_list_dates import ft_choose_dpt
-from sources.config import ft_print_success, ft_correct_city, ft_only_code,
+from sources.config import ft_print_success, ft_correct_city, ft_only_code,\
     ft_only_Adh_Id, ft_quitt_status, ft_duplicates, ft_failInscription, ft_delSince
 # ==============================================================================
 def ft_multpl_check_double(arrayDB, dictNames, order) :

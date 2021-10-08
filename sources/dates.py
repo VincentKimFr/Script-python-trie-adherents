@@ -7,20 +7,7 @@ import datetime
 import re #Regex
 from sources.data_processing import ft_save_index_from_name, ft_search_old_data
 from sources.print import ft_print_err, ft_print_err_no_quitt
-# ==============================================================================
-def ft_convert_text_to_date(date) :
-    
-    #VAR
-    conv = 0
-
-    if (date == "") :
-        conv = ft_convert_text_to_date("01/01/2100") + datetime.timedelta(days = 36500)
-        return (conv)
-
-    conv = date.split("/")
-    conv = datetime.datetime(int(conv[2]), int(conv[1]), int(conv[0]))
-
-    return (conv)
+from sources.convert_text_to_date import ft_convert_text_to_date
 # ==============================================================================
 def ft_calculing_date(count, date) :
 

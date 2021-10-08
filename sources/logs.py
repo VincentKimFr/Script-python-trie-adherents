@@ -8,7 +8,7 @@ import re
 import sys #Exit
 from sources.data_processing import ft_save_index_from_name, ft_search_old_data
 from sources.print import ft_print_err_no_quitt
-from sources.dates import ft_convert_text_to_date
+from sources.convert_text_to_date import ft_convert_text_to_date
 # ==============================================================================
 def ft_statusQuitt(status) :
 
@@ -89,7 +89,7 @@ def ft_logs(lastQuitt, lastNat, array, date, duplicates, delSince, log, order, d
 
             elif (lastStatus == "" and array[i][elemIndex] == "S") :
                 log.append(["A+", array[i][idxAdhID], array[i][idxPseudo], array[i][idxFirstName], array[i][idxName]])
-                ft_print_err_no_quitt("VÉRIFICATION HUMAINE REQUISE : NOUVEL ADHÉRANT EN SURSIS")
+                ft_print_err_no_quitt("VÉRIFICATION HUMAINE REQUISE : NOUVEL ADHÉRANT EN SURSIS, ADH ID : " + array[i][idxAdhID])
                 error = True
 
             elif (ft_member(lastStatus) == True and ft_statusQuitt(array[i][elemIndex]) == True) :
@@ -104,7 +104,7 @@ def ft_logs(lastQuitt, lastNat, array, date, duplicates, delSince, log, order, d
                     array[0][idxAdhCount] + " : " + array[i][idxAdhCount],
                     ft_search_old_data(array[i][idxAdhID], merge, idxDate, array[0][idxAdhID]),
                     array[i][idxDate]])
-                ft_print_err_no_quitt("VÉRIFICATION HUMAINE REQUISE : RÉHADÉSION EN SURSIS")
+                ft_print_err_no_quitt("VÉRIFICATION HUMAINE REQUISE : RÉHADÉSION EN SURSIS, ADH ID : " + array[i][idxAdhID])
                 error = True
 
             elif (ft_statusQuitt(lastStatus) == True and re.search(re.escape(" (réadhésion)"), array[i][elemIndex]) != None) :
@@ -122,7 +122,7 @@ def ft_logs(lastQuitt, lastNat, array, date, duplicates, delSince, log, order, d
                 log.append(["A+aa", array[i][idxAdhID], array[i][idxPseudo], array[i][idxFirstName], array[i][idxName],
                     array[0][idxAdhCount] + " : " + array[i][idxAdhCount], ft_search_old_data(array[i][idxAdhID], merge, idxDate, array[0][idxAdhID]),
                         array[i][idxDate]])
-                ft_print_err_no_quitt("VÉRIFICATION HUMAINE REQUISE : RÉHADÉSION (D'ANCIEN) EN SURSIS")
+                ft_print_err_no_quitt("VÉRIFICATION HUMAINE REQUISE : RÉHADÉSION (D'ANCIEN) EN SURSIS, ADH ID : " + array[i][idxAdhID])
                 error = True
 
             elif (lastStatus == "" and re.search(re.escape(" (primo)"), array[i][elemIndex]) != None) :
@@ -130,6 +130,11 @@ def ft_logs(lastQuitt, lastNat, array, date, duplicates, delSince, log, order, d
 
             elif (lastStatus == "" and ft_statusQuitt(array[i][elemIndex]) == True) :
                 print("--DÉPART ÉCLAIR DE L'ADHÉRENT NUMERO : " + array[i][idxAdhID])
+
+            elif (re.search(re.escape(" (actuel)"), lastStatus) != None and ft_statusQuitt(array[i][elemIndex]) == True) :
+                print("--DÉPART SANS PAIEMENT DE L'ADHÉRENT NUMERO : " + array[i][idxAdhID] + " RAISON : " + array[i][elemIndex])
+                log.append(["!A-", array[i][idxAdhID], array[i][idxPseudo], array[i][idxFirstName], array[i][idxName],
+                    array[0][elemIndex], lastStatus, array[i][elemIndex]])
 
             elif (
                 (re.search(re.escape(" (primo)"), lastStatus) != None and array[i][elemIndex] == "OK")
