@@ -60,12 +60,13 @@ def ft_logs(lastQuitt, lastNat, array, date, duplicates, delSince, log, order, d
     elemIndex = 0
     error = False
     dbl = False
+    newWarn = 0
 
     if (len(merge) == 0) :
         log = [[], [], ["Pas d'archives trouvées à analyser"]]
         print("\n--ANALYSE DES ARCHIVES--")
         print("[/!\\] ANNULATION DE LA CRÉATION D'UN HISTORIQUE, ARCHIVES MANQUANTES")
-        return(log)
+        return(log, newWarn)
 
     print("\n--ANALYSE DES ARCHIVES--")
 
@@ -77,6 +78,7 @@ def ft_logs(lastQuitt, lastNat, array, date, duplicates, delSince, log, order, d
 
             if (lastStatus == "OK" and array[i][elemIndex] == "S") :
                 log.append(["!S+", array[i][idxAdhID], array[i][idxPseudo], array[i][idxFirstName], array[i][idxName]])
+                newWarn += 1
 
             elif (lastStatus == "S" and array[i][elemIndex] == "OK") :
                 log.append(["S-", array[i][idxAdhID], array[i][idxPseudo], array[i][idxFirstName], array[i][idxName]])
@@ -218,5 +220,5 @@ def ft_logs(lastQuitt, lastNat, array, date, duplicates, delSince, log, order, d
     elif (error == False) :
         print("[OK] Analyse des archives terminées avec succès")
 
-    return(log)
+    return(log, newWarn)
 # ==============================================================================

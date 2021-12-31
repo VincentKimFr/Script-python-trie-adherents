@@ -408,3 +408,20 @@ def ft_correct_inscr_nb(array, correct, date, dictNames) :
     if (correc == False) :
         print("[OK] Correction terminée sans effets.")
 # ==============================================================================
+def ft_add_newWarn_to_count(countTxt, newWarn) :
+    #VAR
+    countArray = []
+    lineWarn = ""
+    totWarn = 0
+
+    countArray = countTxt.split("\n")
+    lineWarn = countArray[8]
+    totWarn = lineWarn.split(" ")
+    totWarn = int(totWarn[0])
+
+    lineWarn = str(totWarn - newWarn) + " anciens adhérents en sursis, et " + str(newWarn)\
+        + " nouveaux adhérents en sursis (total : " + str(totWarn) + ")"
+    countArray[8] = lineWarn
+    countTxt = "\n".join(countArray)
+    return(countTxt)
+# ==============================================================================

@@ -40,7 +40,7 @@ from sources.analyse import ft_analyse, ft_check_db_exist_or_unique_file
 from sources.dates import ft_only_members_and_dates_and_count
 from sources.files_manipulation import ft_db_to_array, ft_open
 from sources.data_processing import ft_correct_city_code, ft_cleaning_order_items, ft_dpt, ft_order_status,\
-    ft_check_double, ft_correct_inscr_nb, ft_del_duplicates
+    ft_check_double, ft_correct_inscr_nb, ft_del_duplicates, ft_add_newWarn_to_count
 from sources.logs import ft_logs
 from sources.save_all import ft_save_all
 from sources.print import ft_print_err, ft_print_err_no_quitt
@@ -217,6 +217,7 @@ def ft_run_db(lastFolderPath, DBPath, dictNames, order, GENERAL_UPDATE) :
             dictNames["itemLogNewData_Name"]
             ]
     ]
+    newWarn = 0
     lenLogs = len(logs)
 
     if (ft_manage_forceUpdate(resultPath, DBPath, FORCE_UPDATE, GENERAL_UPDATE,date) == "return") :
@@ -235,7 +236,8 @@ def ft_run_db(lastFolderPath, DBPath, dictNames, order, GENERAL_UPDATE) :
     ft_correct_city_code(arrayDB, correct_city, only_code, only_Adh_Id, order, dictNames, date)
     ft_dpt(arrayDB, dpt, order, dictNames)
     arrayDB = ft_order_status(arrayDB, dpt, order, dictNames)
-    logs = ft_logs(lastQuitt, lastNat, arrayDB, date, duplicates, delSince, logs, order, dictNames)
+    logs, newWarn = ft_logs(lastQuitt, lastNat, arrayDB, date, duplicates, delSince, logs, order, dictNames)
+    countTxt = ft_add_newWarn_to_count(countTxt, newWarn)
     ft_save_all(arrayDB, logs, countTxt, date, dictNames, order, lenLogs, FORCE_UPDATE)
     return(resultPath)
 # ==============================================================================
